@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ÔN TẬP GIỮA KỲ I - MÔN KHOA HỌC TỰ NHIÊN LỚP 6</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Lexend', sans-serif;
+    }
+    .scrollbar-thin::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- Header Banner -->
+  <header class="bg-gradient-to-r from-emerald-600 via-teal-700 to-cyan-800 text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center space-x-3">
+        <div class="w-11 h-11 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-2xl shadow-inner">
+          🔬
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-bold tracking-tight">TRƯỜNG THCS THÀNH ĐÔNG</h1>
+          <p class="text-xs sm:text-sm text-emerald-100">ĐỀ CƯƠNG ÔN TẬP GIỮA KỲ I - MÔN KHOA HỌC TỰ NHIÊN LỚP 6</p>
+        </div>
+      </div>
+      
+      <!-- Stats & Quick Actions -->
+      <div class="flex items-center gap-3">
+        <div class="bg-white/15 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20 text-xs sm:text-sm flex items-center gap-2">
+          <i class="fa-solid fa-star text-amber-300"></i>
+          <span>Điểm số: <strong id="score-counter" class="text-amber-200">0</strong></span>
+        </div>
+        <button onclick="resetAllProgress()" class="bg-white/20 hover:bg-white/30 text-xs px-3 py-1.5 rounded-lg transition duration-200 flex items-center gap-1.5" title="Làm lại từ đầu">
+          <i class="fa-solid fa-arrows-rotate"></i>
+          <span class="hidden sm:inline">Làm lại</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="max-w-6xl mx-auto px-4 flex space-x-2 border-t border-white/10 pt-2 overflow-x-auto scrollbar-thin">
+      <button onclick="switchTab('biology')" id="tab-btn-biology" class="tab-btn flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-t-lg transition border-b-2 border-white bg-white/15 text-white">
+        🌱 Sinh Học <span class="bg-emerald-800/80 text-emerald-100 text-xs px-2 py-0.5 rounded-full" id="bio-count">36 câu</span>
+      </button>
+      <button onclick="switchTab('chemistry')" id="tab-btn-chemistry" class="tab-btn flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-t-lg transition border-b-2 border-transparent text-emerald-100 hover:text-white hover:bg-white/10">
+        🧪 Mở Đầu & Hóa Học <span class="bg-teal-800/80 text-teal-100 text-xs px-2 py-0.5 rounded-full" id="chem-count">15 câu</span>
+      </button>
+      <button onclick="switchTab('physics')" id="tab-btn-physics" class="tab-btn flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-t-lg transition border-b-2 border-transparent text-emerald-100 hover:text-white hover:bg-white/10">
+        ⚡ Vật Lí (Lực) <span class="bg-cyan-800/80 text-cyan-100 text-xs px-2 py-0.5 rounded-full" id="phys-count">13 câu</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Filter & Sub-Nav Bar -->
+  <div class="bg-white border-b border-slate-200 shadow-sm sticky top-[100px] sm:top-[106px] z-40">
+    <div class="max-w-6xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
+      <div class="flex items-center gap-2 overflow-x-auto py-1 scrollbar-thin">
+        <span class="text-slate-500 font-medium whitespace-nowrap"><i class="fa-solid fa-filter mr-1"></i>Dạng bài:</span>
+        <button onclick="filterType('all')" class="filter-pill bg-emerald-600 text-white px-2.5 py-1 rounded-full font-medium" data-filter="all">Tất cả</button>
+        <button onclick="filterType('mcq')" class="filter-pill bg-slate-100 text-slate-600 hover:bg-slate-200 px-2.5 py-1 rounded-full font-medium" data-filter="mcq">Trắc nghiệm</button>
+        <button onclick="filterType('tf')" class="filter-pill bg-slate-100 text-slate-600 hover:bg-slate-200 px-2.5 py-1 rounded-full font-medium" data-filter="tf">Đúng / Sai</button>
+        <button onclick="filterType('short')" class="filter-pill bg-slate-100 text-slate-600 hover:bg-slate-200 px-2.5 py-1 rounded-full font-medium" data-filter="short">Trả lời ngắn</button>
+        <button onclick="filterType('essay')" class="filter-pill bg-slate-100 text-slate-600 hover:bg-slate-200 px-2.5 py-1 rounded-full font-medium" data-filter="essay">Tự luận</button>
+      </div>
+
+      <div class="text-slate-500 text-xs hidden md:flex items-center gap-2">
+        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Đã hoàn thành</span>
+        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-slate-300 inline-block"></span> Chưa làm</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <main class="max-w-6xl mx-auto px-4 py-6 flex-grow w-full">
+    <!-- Instruction Alert -->
+    <div class="mb-6 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl flex items-start gap-3 shadow-sm">
+      <div class="text-emerald-600 text-xl mt-0.5"><i class="fa-solid fa-lightbulb"></i></div>
+      <div class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+        <strong>Hướng dẫn học tập:</strong> Hãy tự mình suy nghĩ và trả lời trước khi bấm nút <strong>Gợi ý</strong> hoặc <strong>Kiểm tra</strong>. Đối với các câu tự luận, hãy gõ nội dung làm bài vào ô trống rồi nhấn <strong>Đối chiếu đáp án</strong> để so sánh lời giải và tự chấm điểm cho mình!
+      </div>
+    </div>
+
+    <!-- Subject Containers -->
+    <div id="subject-biology" class="subject-section space-y-6"></div>
+    <div id="subject-chemistry" class="subject-section hidden space-y-6"></div>
+    <div id="subject-physics" class="subject-section hidden space-y-6"></div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-6 mt-12 text-center text-xs sm:text-sm text-slate-500">
+    <div class="max-w-6xl mx-auto px-4">
+      <p class="font-medium text-slate-700">Tài liệu ôn tập tương tác AI - Giáo viên: Nguyễn Thế Phương - Trường THCS Thành Đông</p>
+      <p class="mt-1 text-slate-400">Hỗ trợ học sinh rèn luyện tư duy khoa học, tự tin đạt kết quả cao trong kỳ thi Giữa học kỳ 1.</p>
+    </div>
+  </footer>
+
+  <!-- Custom Notification Modal (Thay thế hộp thoại mặc định) -->
+  <div id="custom-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 text-center">
+      <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h3 class="font-bold text-slate-800 text-base mb-1">Xác nhận</h3>
+      <p id="modal-desc" class="text-xs text-slate-600 mb-5 leading-relaxed"></p>
+      <div class="flex gap-2 justify-center">
+        <button id="modal-cancel-btn" class="px-4 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-semibold rounded-xl transition">Hủy bỏ</button>
+        <button id="modal-confirm-btn" class="px-4 py-2 bg-rose-600 text-white hover:bg-rose-700 text-xs font-semibold rounded-xl transition">Đồng ý</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Box -->
+  <div id="toast-box" class="fixed bottom-5 right-5 z-50 transform translate-y-10 opacity-0 pointer-events-none transition-all duration-300 bg-slate-800 text-white px-4 py-3 rounded-xl shadow-lg text-xs flex items-center gap-2 max-w-xs">
+    <i class="fa-solid fa-circle-info text-emerald-400 text-sm"></i>
+    <span id="toast-text"></span>
+  </div>
+
+  <!-- Application Script & Question Bank -->
+  <script>
+    // Full Question Bank from the provided review document
+    const questionBank = {
+      biology: [
+        // I. TRẮC NGHIỆM LỰA CHỌN
+        {
+          id: 'bio-mcq-1',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Khi quan sát tế bào thực vật ta nên chọn loại kính nào?',
+          options: [
+            { text: 'Kính có độ.', isCorrect: false },
+            { text: 'Kính lúp.', isCorrect: false },
+            { text: 'Kính hiển vi.', isCorrect: true },
+            { text: 'Kính hiển vi hoặc kính lúp đều được.', isCorrect: false }
+          ],
+          hint: 'Tế bào thực vật có kích thước siêu nhỏ hiển vi (từ vài chục đến hàng trăm micromet), kính lúp chỉ phóng đại tối đa 3-20 lần.',
+          rationale: 'Tế bào có kích thước rất nhỏ bé, mắt thường hoặc kính lúp thông thường không thể nhìn rõ cấu trúc chi tiết, do đó cần dùng kính hiển vi quang học có độ phóng đại từ hàng chục đến hàng ngàn lần.'
+        },
+        {
+          id: 'bio-mcq-2',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Vật liệu nào dưới đây, được sử dụng ngoài mục đích xây dựng còn hướng tới bảo vệ môi trường và đảm bảo sự phát triển bền vững?',
+          options: [
+            { text: 'Nhựa.', isCorrect: false },
+            { text: 'Kim loại.', isCorrect: false },
+            { text: 'Đá vôi.', isCorrect: false },
+            { text: 'Gạch không nung.', isCorrect: true }
+          ],
+          hint: 'Loại vật liệu này không cần dùng than củi để đốt nung, tránh tiêu tốn đất sét nông nghiệp và không sinh khí thải độc hại.',
+          rationale: 'Gạch không nung được sản xuất bằng công nghệ ép thủy lực từ phế thải xây dựng, xi măng, cát... không qua quá trình nung đốt nên giảm thiểu khí thải nhà kính và ô nhiễm môi trường.'
+        },
+        {
+          id: 'bio-mcq-3',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Vật liệu nào sau đây là chất cách điện?',
+          options: [
+            { text: 'Gỗ khô.', isCorrect: true },
+            { text: 'Đồng.', isCorrect: false },
+            { text: 'Sắt.', isCorrect: false },
+            { text: 'Nhôm.', isCorrect: false }
+          ],
+          hint: 'Các kim loại như đồng, sắt, nhôm có các electron tự do nên dẫn điện rất tốt.',
+          rationale: 'Gỗ (đặc biệt là gỗ khô) không có hạt mang điện tự do nên không dẫn điện, được dùng làm vật liệu cách điện an toàn.'
+        },
+        {
+          id: 'bio-mcq-4',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Sử dụng loại nhiên liệu nào sau đây đảm bảo sự phát triển bền vững?',
+          options: [
+            { text: 'Than đá.', isCorrect: false },
+            { text: 'Dầu hỏa.', isCorrect: false },
+            { text: 'Biogas.', isCorrect: true },
+            { text: 'Khí gas.', isCorrect: false }
+          ],
+          hint: 'Đây là loại nhiên liệu sinh học được tạo ra bằng cách ủ phân gia súc, rác thải hữu cơ.',
+          rationale: 'Biogas (khí sinh học) là nhiên liệu tái tạo được, tận dụng chất thải chăn nuôi/nông nghiệp, giảm ô nhiễm môi trường và hiệu ứng nhà kính.'
+        },
+        {
+          id: 'bio-mcq-5',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Nguyên liệu nào sau đây được sử dụng trong lò nung vôi?',
+          options: [
+            { text: 'Đá vôi.', isCorrect: true },
+            { text: 'Đá cuội.', isCorrect: false },
+            { text: 'Cát.', isCorrect: false },
+            { text: 'Gạch.', isCorrect: false }
+          ],
+          hint: 'Khi nung ở nhiệt độ cao, hợp chất này bị phân hủy tạo thành vôi sống (CaO) và khí carbon dioxide.',
+          rationale: 'Đá vôi (thành phần chính là canxi cacbonat - CaCO3) được dùng làm nguyên liệu chính đưa vào lò nung để sản xuất vôi sống.'
+        },
+        {
+          id: 'bio-mcq-6',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Nguyên liệu nào sau đây thể hiện các dấu hiệu của sự sống?',
+          options: [
+            { text: 'Đá vôi.', isCorrect: false },
+            { text: 'Đất sét.', isCorrect: false },
+            { text: 'Cây mía.', isCorrect: true },
+            { text: 'Gạch.', isCorrect: false }
+          ],
+          hint: 'Vật thể sống có khả năng trao đổi chất, lớn lên, sinh sản và cảm ứng.',
+          rationale: 'Cây mía là thực vật - một cơ thể sống có quá trình trao đổi chất, quang hợp, hô hấp và sinh trưởng.'
+        },
+        {
+          id: 'bio-mcq-7',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Đơn vị cấu tạo và chức năng của mọi cơ thể sống là gì?',
+          options: [
+            { text: 'Mô.', isCorrect: false },
+            { text: 'Tế bào.', isCorrect: true },
+            { text: 'Cơ quan.', isCorrect: false },
+            { text: 'Hệ cơ quan.', isCorrect: false }
+          ],
+          hint: 'Mọi sinh vật từ đơn bào đến đa bào đều được tạo nên từ đơn vị cơ bản này.',
+          rationale: 'Tế bào là đơn vị cơ sở cấu tạo nên mọi cơ thể sinh vật và thực hiện mọi chức năng sống cơ bản.'
+        },
+        {
+          id: 'bio-mcq-8',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Khi sử dụng kính lúp, để quan sát vật rõ hơn, cần thực hiện thao tác nào?',
+          options: [
+            { text: 'Đặt kính thật xa vật.', isCorrect: false },
+            { text: 'Điều chỉnh khoảng cách giữa kính và vật đến khi nhìn rõ.', isCorrect: true },
+            { text: 'Nhắm một mắt và đặt kính úp xuống bàn.', isCorrect: false },
+            { text: 'Chiếu ánh sáng trực tiếp vào mắt qua kính.', isCorrect: false }
+          ],
+          hint: 'Hình ảnh qua kính lúp phụ thuộc vào khoảng cách từ vật tới tiêu cự của thấu kính.',
+          rationale: 'Cần dịch chuyển từ từ khoảng cách giữa kính lúp và vật cho tới khi ảnh hiện lên to và sắc nét nhất trong tầm mắt.'
+        },
+        {
+          id: 'bio-mcq-9',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Bộ phận nào của kính hiển vi quang học dùng để người quan sát đặt mắt nhìn vào?',
+          options: [
+            { text: 'Chân kính.', isCorrect: false },
+            { text: 'Thân kính.', isCorrect: false },
+            { text: 'Thị kính.', isCorrect: true },
+            { text: 'Ốc sơ cấp.', isCorrect: false }
+          ],
+          hint: '"Thị" có nghĩa là mắt, bộ phận này nằm ở đầu trên của ống kính.',
+          rationale: 'Thị kính là thấu kính ở đầu trên cùng của ống kính, nơi người quan sát đặt mắt vào để xem hình ảnh phóng đại.'
+        },
+        {
+          id: 'bio-mcq-10',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Khi sử dụng kính hiển vi quang học, bộ phận nào thường được điều chỉnh để làm rõ hình ảnh tiêu bản?',
+          options: [
+            { text: 'Ốc điều chỉnh (ốc to và ốc nhỏ).', isCorrect: true },
+            { text: 'Chân kính.', isCorrect: false },
+            { text: 'Kẹp giữ tiêu bản.', isCorrect: false },
+            { text: 'Đế kính.', isCorrect: false }
+          ],
+          hint: 'Vặn các ốc này để nâng hoặc hạ ống kính / bàn kính nhằm chỉnh tiêu cự.',
+          rationale: 'Hệ thống ốc điều chỉnh gồm ốc to (chỉnh thô) và ốc nhỏ (chỉnh vi cấp) có tác dụng lấy nét hình ảnh sắc nét nhất.'
+        },
+        {
+          id: 'bio-mcq-11',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Vật liệu nào sau đây thường được sử dụng để chế tạo lõi dây dẫn điện?',
+          options: [
+            { text: 'Cao su.', isCorrect: false },
+            { text: 'Đồng.', isCorrect: true },
+            { text: 'Gỗ khô.', isCorrect: false },
+            { text: 'Thủy tinh.', isCorrect: false }
+          ],
+          hint: 'Kim loại này có màu đỏ cam, dẫn điện và nhiệt cực tốt, dẻo dễ uốn.',
+          rationale: 'Đồng có độ dẫn điện rất cao, giá thành hợp lý và tính dẻo dễ dát mỏng kéo sợi nên được dùng làm lõi dây dẫn điện.'
+        },
+        {
+          id: 'bio-mcq-12',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Nhiên liệu nào sau đây thuộc nhiên liệu hóa thạch?',
+          options: [
+            { text: 'Ánh sáng mặt trời.', isCorrect: false },
+            { text: 'Gió.', isCorrect: false },
+            { text: 'Than đá.', isCorrect: true },
+            { text: 'Nước chảy.', isCorrect: false }
+          ],
+          hint: 'Được hình thành từ xác thực vật cổ đại bị vùi lấp sâu trong lòng đất qua hàng triệu năm.',
+          rationale: 'Than đá, dầu mỏ và khí thiên nhiên là các nhiên liệu hóa thạch hình thành từ xác sinh vật qua hàng triệu năm.'
+        },
+        {
+          id: 'bio-mcq-13',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Loại thức ăn nào sau đây chứa hàm lượng tinh bột dồi dào nhất?',
+          options: [
+            { text: 'Rau xanh.', isCorrect: false },
+            { text: 'Gạo.', isCorrect: true },
+            { text: 'Thịt bò.', isCorrect: false },
+            { text: 'Ớt cay.', isCorrect: false }
+          ],
+          hint: 'Hạt của cây lúa nước, cung cấp bữa cơm hàng ngày của người Việt.',
+          rationale: 'Gạo là lương thực chính chứa lượng carbohydrate (tinh bột) rất cao cung cấp năng lượng cho cơ thể.'
+        },
+        {
+          id: 'bio-mcq-14',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Loại thức ăn nào sau đây chứa nhiều hàm lượng chất đạm (protein)?',
+          options: [
+            { text: 'Rau xanh.', isCorrect: false },
+            { text: 'Gạo.', isCorrect: false },
+            { text: 'Thịt.', isCorrect: true },
+            { text: 'Ngô.', isCorrect: false }
+          ],
+          hint: 'Nguồn thức ăn từ động vật giúp xây dựng cơ bắp và phát triển tế bào.',
+          rationale: 'Thịt (heo, bò, gà...) là nguồn thực phẩm giàu protein hoàn chỉnh chứa nhiều acid amin thiết yếu.'
+        },
+        {
+          id: 'bio-mcq-15',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Loại thức ăn nào sau đây chứa nhiều hàm lượng vitamin và chất xơ?',
+          options: [
+            { text: 'Rau xanh.', isCorrect: true },
+            { text: 'Gạo.', isCorrect: false },
+            { text: 'Mỡ heo.', isCorrect: false },
+            { text: 'Đường cát.', isCorrect: false }
+          ],
+          hint: 'Thực phẩm có màu xanh, giàu khoáng chất, nên ăn mỗi ngày để tiêu hóa tốt.',
+          rationale: 'Rau xanh chứa hàm lượng phong phú các loại vitamin (A, C, K...), khoáng chất và chất xơ quan trọng.'
+        },
+        {
+          id: 'bio-mcq-16',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Tế bào động vật KHÔNG có bào quan nào sau đây?',
+          options: [
+            { text: 'Màng nhân.', isCorrect: false },
+            { text: 'Nhân tế bào.', isCorrect: false },
+            { text: 'Màng tế bào.', isCorrect: false },
+            { text: 'Lục lạp.', isCorrect: true }
+          ],
+          hint: 'Bào quan này chứa chất diệp lục giúp thực vật quang hợp tổng hợp chất hữu cơ.',
+          rationale: 'Lục lạp là bào quan đặc trưng chỉ có ở tế bào quang hợp của thực vật, tế bào động vật không có lục lạp.'
+        },
+        {
+          id: 'bio-mcq-17',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Thực phẩm nào sau đây chứa nhiều protein và lipid nhất?',
+          options: [
+            { text: 'Rau xanh.', isCorrect: false },
+            { text: 'Trái cây.', isCorrect: false },
+            { text: 'Bánh mỳ.', isCorrect: false },
+            { text: 'Thịt heo.', isCorrect: true }
+          ],
+          hint: 'Gồm có phần nạc (chứa đạm) và phần mỡ (chứa chất béo).',
+          rationale: 'Thịt heo cung cấp lượng lớn protein trong phần thịt nạc và lipid dồi dào trong mô mỡ.'
+        },
+        {
+          id: 'bio-mcq-18',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Vật liệu nào sau đây dễ bị gỉ sét khi để ngoài môi trường không khí ẩm?',
+          options: [
+            { text: 'Gạch nung.', isCorrect: false },
+            { text: 'Cát.', isCorrect: false },
+            { text: 'Sắt.', isCorrect: true },
+            { text: 'Gỗ.', isCorrect: false }
+          ],
+          hint: 'Kim loại này phản ứng với oxygen và hơi nước tạo thành gỉ màu nâu đỏ.',
+          rationale: 'Sắt dễ bị oxy hóa trong không khí ẩm tạo thành lớp gỉ sắt (oxit sắt) xốp, giòn.'
+        },
+        {
+          id: 'bio-mcq-19',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Nhiên liệu nào sau đây được ưu tiên sử dụng hiện nay để bảo vệ môi trường?',
+          options: [
+            { text: 'Nhiên liệu hạt nhân.', isCorrect: false },
+            { text: 'Nhiên liệu sinh học.', isCorrect: true },
+            { text: 'Nhiên liệu hóa thạch.', isCorrect: false },
+            { text: 'Nhiên liệu không tái tạo.', isCorrect: false }
+          ],
+          hint: 'Ví dụ như xăng E5 (pha cồn sinh học), khí biogas...',
+          rationale: 'Nhiên liệu sinh học có nguồn gốc hữu cơ tái tạo được, thải ít khí độc hại và thân thiện với môi trường.'
+        },
+        {
+          id: 'bio-mcq-20',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Loại nhiên liệu nào sau đây thuộc loại KHÔNG tái tạo?',
+          options: [
+            { text: 'Gỗ rừng trồng.', isCorrect: false },
+            { text: 'Dầu thô.', isCorrect: true },
+            { text: 'Cồn sinh học.', isCorrect: false },
+            { text: 'Rơm rạ nông sản.', isCorrect: false }
+          ],
+          hint: 'Cần hàng triệu năm để hình thành, khai thác nhiều sẽ dẫn tới cạn kiệt.',
+          rationale: 'Dầu thô (dầu mỏ) là nhiên liệu hóa thạch không thể tái tạo trong khoảng thời gian ngắn của con người.'
+        },
+        {
+          id: 'bio-mcq-21',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Loại nào sau đây được xem là vật liệu (dùng để chế tạo ra vật thể)?',
+          options: [
+            { text: 'Gỗ.', isCorrect: true },
+            { text: 'Đá tự nhiên.', isCorrect: false },
+            { text: 'Khí gas.', isCorrect: false },
+            { text: 'Cây xoài.', isCorrect: false }
+          ],
+          hint: 'Dùng để đóng bàn ghế, giường tủ, cửa nhà...',
+          rationale: 'Gỗ là vật liệu được con người gia công tạo thành các vật dụng như bàn, ghế, tủ, nhà cửa.'
+        },
+        {
+          id: 'bio-mcq-22',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Loại nào sau đây thuộc nhóm nhiên liệu (chất đốt)?',
+          options: [
+            { text: 'Gỗ thanh xẻ làm bàn.', isCorrect: false },
+            { text: 'Đá cuội.', isCorrect: false },
+            { text: 'Khí gas.', isCorrect: true },
+            { text: 'Cây xoài.', isCorrect: false }
+          ],
+          hint: 'Chất khi cháy tỏa nhiều nhiệt, dùng đun nấu thức ăn trong gia đình.',
+          rationale: 'Khí gas là nhiên liệu được đốt cháy để cung cấp năng lượng nhiệt phục vụ nấu nướng, sưởi ấm.'
+        },
+        {
+          id: 'bio-mcq-23',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Loại nào sau đây được dùng làm nguyên liệu ban đầu trong công nghiệp sản xuất?',
+          options: [
+            { text: 'Gỗ thành phẩm.', isCorrect: false },
+            { text: 'Đá (đá vôi).', isCorrect: true },
+            { text: 'Khí gas.', isCorrect: false },
+            { text: 'Quả xoài.', isCorrect: false }
+          ],
+          hint: 'Được khai thác từ mỏ để sản xuất ra xi măng hoặc vôi sống.',
+          rationale: 'Đá (đá vôi khai thác tự nhiên) là nguyên liệu đầu vào để chế biến thành xi măng, vôi tôi...'
+        },
+        {
+          id: 'bio-mcq-24',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN (4 LỰA CHỌN)',
+          question: 'Loại nào sau đây có thể thu hoạch để làm lương thực, thực phẩm cho con người?',
+          options: [
+            { text: 'Gỗ cây rừng.', isCorrect: false },
+            { text: 'Đá xây dựng.', isCorrect: false },
+            { text: 'Khí gas.', isCorrect: false },
+            { text: 'Cây xoài (cho quả ngọt).', isCorrect: true }
+          ],
+          hint: 'Cung cấp trái cây chứa nhiều đường và vitamin cho bữa ăn.',
+          rationale: 'Quả từ cây xoài là thực phẩm tươi ngon giàu vitamin và khoáng chất cần thiết cho con người.'
+        },
+
+        // B. TRẮC NGHIỆM ĐÚNG - SAI
+        {
+          id: 'bio-tf-1',
+          type: 'tf',
+          section: 'II. TRẮC NGHIỆM KHÁCH QUAN "ĐÚNG - SAI"',
+          prompt: 'Cho các vật liệu sau: Kim loại, gốm, cao su, gỗ. Hãy xác định tính đúng sai cho từng nhận định sau:',
+          statements: [
+            { id: 's1', text: 'A. Khi sử dụng vật liệu kim loại ảnh hưởng đến môi trường còn vật liệu gốm không ảnh hưởng đến môi trường.', isCorrect: false, rationale: 'Sai: Cả quá trình khai thác quặng, nung gốm sứ đều tiêu hao năng lượng và có thể gây ô nhiễm bụi, khí thải ra môi trường nếu không xử lý tốt.' },
+            { id: 's2', text: 'B. Khi khai thác và sử dụng quá mức vật liệu gỗ, cao su không đúng cách sẽ gây ảnh hưởng xấu đến môi trường.', isCorrect: true, rationale: 'Đúng: Phá rừng lấy gỗ làm mất cân bằng sinh thái, rác thải cao su khó phân hủy gây ô nhiễm đất và nước.' },
+            { id: 's3', text: 'C. Khi sử dụng vật liệu cao su, vật liệu kim loại không ảnh hưởng gì đến môi trường.', isCorrect: false, rationale: 'Sai: Lốp xe cao su khó phân hủy và khai thác luyện kim xả thải nhiều chất độc hại ra môi trường.' },
+            { id: 's4', text: 'D. Khi sử dụng vật liệu cao su ảnh hưởng đến môi trường còn vật liệu gỗ hoàn toàn không bao giờ ảnh hưởng đến môi trường.', isCorrect: false, rationale: 'Sai: Khai thác gỗ bừa bãi dẫn đến xói mòn đất, lũ lụt và suy thoái môi trường sống của muôn loài.' }
+          ]
+        },
+        {
+          id: 'bio-tf-2',
+          type: 'tf',
+          section: 'II. TRẮC NGHIỆM KHÁCH QUAN "ĐÚNG - SAI"',
+          prompt: 'Vật liệu và nguyên liệu. Hãy xác định từng nhận định sau là Đúng hay Sai:',
+          statements: [
+            { id: 's1', text: 'A) Kim loại thường có khả năng dẫn điện kém.', isCorrect: false, rationale: 'Sai: Hầu hết các kim loại (như bạc, đồng, nhôm, sắt) đều dẫn điện rất tốt.' },
+            { id: 's2', text: 'B) Cao su thường được sử dụng làm vật liệu cách điện.', isCorrect: true, rationale: 'Đúng: Cao su có tính đàn hồi cao, không thấm nước và cách điện rất tốt nên thường bọc dây điện, làm găng tay bảo hộ.' },
+            { id: 's3', text: 'C) Đá vôi có thể được dùng làm nguyên liệu sản xuất xi măng.', isCorrect: true, rationale: 'Đúng: Đá vôi và đất sét là hai nguyên liệu chính để sản xuất clinker và xi măng.' },
+            { id: 's4', text: 'D) Mọi loại vật liệu đều có tính chất và công dụng hoàn toàn giống nhau.', isCorrect: false, rationale: 'Sai: Mỗi loại vật liệu có các tính chất vật lý và hóa học đặc thù (cứng, mềm, dẫn điện, cách nhiệt...) phục vụ các mục đích khác nhau.' }
+          ]
+        },
+        {
+          id: 'bio-tf-3',
+          type: 'tf',
+          section: 'II. TRẮC NGHIỆM KHÁCH QUAN "ĐÚNG - SAI"',
+          prompt: 'Đánh giá tính đúng sai của các phát biểu sau đây khi nói về nhiên liệu:',
+          statements: [
+            { id: 's1', text: 'A) Cả nhiên liệu rắn và nhiên liệu khí đều có thể tái sử dụng lại sau khi đã đốt cháy hoàn toàn.', isCorrect: false, rationale: 'Sai: Khi đã cháy hoàn toàn, năng lượng hóa học đã chuyển hóa thành nhiệt và ánh sáng, không thể tái sử dụng trực tiếp lại nhiên liệu đó.' },
+            { id: 's2', text: 'B) Nhiên liệu rắn (như than đá) khi cháy sinh ra nhiều khói bụi, tro xỉ độc hại hơn so với nhiên liệu khí sạch.', isCorrect: true, rationale: 'Đúng: Than đá cháy sinh nhiều khí CO, CO2, SO2 và tro bụi mịn làm ô nhiễm không khí.' },
+            { id: 's3', text: 'C) Nhiên liệu rắn và nhiên liệu khí khi cháy đều tỏa nhiều nhiệt.', isCorrect: true, rationale: 'Đúng: Đặc tính chung quan trọng nhất của mọi nhiên liệu là tỏa nhiều nhiệt khi bị đốt cháy.' },
+            { id: 's4', text: 'D) Nhiên liệu rắn dễ bắt cháy và cháy hoàn toàn hơn nhiên liệu khí.', isCorrect: false, rationale: 'Sai: Nhiên liệu khí dễ tiếp xúc đều với oxygen trong không khí hơn nên dễ bắt cháy và cháy hoàn toàn hơn nhiên liệu rắn.' }
+          ]
+        },
+
+        // C. TRẮC NGHIỆM TRẢ LỜI NGẮN
+        {
+          id: 'bio-sa-1',
+          type: 'short',
+          section: 'III. TRẮC NGHIỆM TRẢ LỜI NGẮN',
+          question: 'Cho các nhiên liệu sau: gas, than đá, dầu mỏ, biogas, xăng sinh học. Có bao nhiêu nhiên liệu được xếp vào loại thân thiện với môi trường?',
+          expected: ['2', 'hai'],
+          hint: 'Hãy đếm các nhiên liệu có nguồn gốc sinh học hoặc tái tạo giúp giảm phát thải ròng.',
+          explanation: 'Có 2 nhiên liệu thân thiện với môi trường là: biogas và xăng sinh học (E5).'
+        },
+        {
+          id: 'bio-sa-2',
+          type: 'short',
+          section: 'III. TRẮC NGHIỆM TRẢ LỜI NGẮN',
+          question: 'Cho các thực vật sau: cây lúa nước, cây xoài, cây mận, cây ngô, cây lúa mì. Có bao nhiêu cây thuộc nhóm cây lương thực?',
+          expected: ['3', 'ba'],
+          hint: 'Cây lương thực là cây trồng chứa hàm lượng lớn tinh bột làm nguồn thức ăn chính hàng ngày.',
+          explanation: 'Có 3 cây lương thực gồm: cây lúa nước, cây ngô, cây lúa mì. (Xoài và mận thuộc nhóm cây ăn quả/thực phẩm).'
+        },
+        {
+          id: 'bio-sa-3',
+          type: 'short',
+          section: 'III. TRẮC NGHIỆM TRẢ LỜI NGẮN',
+          question: 'Trong các loại thực phẩm sau: thịt, mía, ớt, cá, đậu nành. Có bao nhiêu thực phẩm giàu chất đạm (protein)?',
+          expected: ['3', 'ba'],
+          hint: 'Chất đạm có nhiều trong thịt động vật, thủy sản và các loại đậu.',
+          explanation: 'Có 3 thực phẩm giàu chất đạm: thịt, cá và đậu nành.'
+        },
+        {
+          id: 'bio-sa-4',
+          type: 'short',
+          section: 'III. TRẮC NGHIỆM TRẢ LỜI NGẮN',
+          question: 'Cho các nhiên liệu sau: gas, xăng, than đá, cồn, dầu hỏa. Số nhiên liệu ở thể lỏng ở điều kiện thường là bao nhiêu?',
+          expected: ['3', 'ba'],
+          hint: 'Xăng, than, gas, cồn, dầu hỏa: hãy lọc ra những chất ở trạng thái chất lỏng.',
+          explanation: 'Có 3 nhiên liệu ở thể lỏng gồm: xăng, cồn và dầu hỏa. (Gas ở thể khí, than đá ở thể rắn).'
+        },
+        {
+          id: 'bio-sa-5',
+          type: 'short',
+          section: 'III. TRẮC NGHIỆM TRẢ LỜI NGẮN',
+          question: 'Cho các thực vật sau: cây xoài, cây mận, cây cà chua, cây ớt, cây cà rốt. Số cây có quả/củ chứa nhiều vitamin A (tiền vitamin A - carotenoid màu đỏ/vàng/cam) là bao nhiêu?',
+          expected: ['4', 'bốn'],
+          hint: 'Các loại rau quả củ có màu cam, đỏ, vàng đậm thường rất giàu beta-carotene tổng hợp thành vitamin A.',
+          explanation: 'Có 4 loại thực vật rất giàu tiền vitamin A (carotenoid): xoài chín (vàng), cà chua (đỏ), ớt (đỏ/vàng), cà rốt (cam).'
+        },
+        {
+          id: 'bio-sa-6',
+          type: 'short',
+          section: 'III. TRẮC NGHIỆM TRẢ LỜI NGẮN',
+          question: 'Cho các nhiên liệu sau: gas, xăng, than đá, gỗ, dầu hỏa. Số nhiên liệu ở thể lỏng là bao nhiêu?',
+          expected: ['2', 'hai'],
+          hint: 'Xác định trạng thái của từng nhiên liệu ở nhiệt độ phòng.',
+          explanation: 'Có 2 nhiên liệu ở thể lỏng: xăng và dầu hỏa. (Gas: khí; than đá, gỗ: rắn).'
+        },
+
+        // TỰ LUẬN
+        {
+          id: 'bio-essay-1',
+          type: 'essay',
+          section: 'IV. PHẦN TỰ LUẬN',
+          question: 'Câu 1:\na) Nêu các thành phần chính của tế bào?\nb) Nêu các thành phần chính của tế bào nhân thực?\nc) Nêu tên một thành phần giống và một thành phần khác giữa tế bào thực vật và tế bào động vật?\nd) Nêu tên một thành phần giống và một thành phần khác giữa tế bào nhân sơ và tế bào nhân thực?',
+          hint: 'Nhớ lại 3 thành phần cốt lõi của mọi tế bào; sự khác biệt về màng nhân; thành tế bào và lục lạp ở thực vật.',
+          modelAnswer: `a) Các thành phần chính của một tế bào gồm 3 phần:\n- Màng tế bào (màng sinh chất)\n- Tế bào chất\n- Nhân (hoặc vùng nhân chứa vật chất di truyền).\n\nb) Các thành phần chính của tế bào nhân thực:\n- Màng tế bào\n- Tế bào chất (chứa các bào quan có màng như ti thể, lưới nội chất, bộ máy Golgi...)\n- Nhân tế bào hoàn chỉnh (có màng nhân bao bọc bảo vệ vật chất di truyền).\n\nc) Giữa tế bào thực vật và tế bào động vật:\n- Giống nhau: Đều có màng tế bào, tế bào chất và nhân tế bào hoàn chỉnh.\n- Khác nhau: Tế bào thực vật có thành tế bào (cellulose), lục lạp và không bào trung tâm lớn; tế bào động vật không có các thành phần này.\n\nd) Giữa tế bào nhân sơ và tế bào nhân thực:\n- Giống nhau: Đều có màng tế bào, tế bào chất và vật chất di truyền (DNA).\n- Khác nhau: Tế bào nhân sơ chưa có nhân hoàn chỉnh (chỉ có vùng nhân, không có màng nhân); tế bào nhân thực đã có nhân chính thức có màng nhân bao bọc.`
+        },
+        {
+          id: 'bio-essay-2',
+          type: 'essay',
+          section: 'IV. PHẦN TỰ LUẬN',
+          question: 'Câu 2:\na) Nêu tên 4 cây lương thực chính của Việt Nam?\nb) Nêu tên 3 chất dinh dưỡng chính trong lương thực, thực phẩm và vai trò của từng chất đối với đời sống con người?',
+          hint: 'Kể tên lúa, ngô, khoai, sắn. Ba nhóm chất dinh dưỡng lớn: Tinh bột/đường (carbohydrate), Đạm (protein), Chất béo (lipid).',
+          modelAnswer: `a) 4 cây lương thực chính ở Việt Nam:\n1. Cây lúa nước (cung cấp gạo)\n2. Cây ngô (bắp)\n3. Cây khoai lang\n4. Cây sắn (khoai mì)\n\nb) 3 nhóm chất dinh dưỡng chính và vai trò:\n1. Carbohydrate (tinh bột, đường): Cung cấp nguồn năng lượng chính cho mọi hoạt động sống của cơ thể.\n2. Protein (chất đạm): Cấu tạo, tái tạo và phát triển các mô, cơ bắp, cơ quan; tham gia cấu tạo enzym và kháng thể miễn dịch.\n3. Lipid (chất béo): Cung cấp và dự trữ năng lượng cho cơ thể, giữ ấm cơ thể và hòa tan các vitamin tan trong dầu (A, D, E, K).`
+        },
+        {
+          id: 'bio-essay-3',
+          type: 'essay',
+          section: 'IV. PHẦN TỰ LUẬN',
+          question: 'Câu 3: Cho các nhiên liệu/năng lượng sau: gas, xăng, than đá, thủy điện, năng lượng gió. Hãy sắp xếp chúng vào hai nhóm: Nhiên liệu/năng lượng tái tạo và Nhiên liệu/năng lượng không tái tạo?',
+          hint: 'Năng lượng tái tạo có nguồn gốc tự nhiên vô tận hoặc liên tục được bù đắp. Nhiên liệu hóa thạch sẽ cạn kiệt theo thời gian khai thác.',
+          modelAnswer: `Phân loại thành hai nhóm như sau:\n\n1. Nhóm năng lượng tái tạo (nguồn năng lượng sạch, liên tục tự phục hồi):\n- Thủy điện (năng lượng dòng nước chảy)\n- Năng lượng gió\n\n2. Nhóm nhiên liệu không tái tạo (nhiên liệu hóa thạch, cạn kiệt dần):\n- Than đá\n- Gas (khí hóa lỏng mỏ khí/mỏ dầu)\n- Xăng (sản phẩm chế biến từ dầu mỏ)`
+        }
+      ],
+
+      chemistry: [
+        // TRẮC NGHIỆM HÓA HỌC & MỞ ĐẦU
+        {
+          id: 'chem-mcq-1',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN',
+          question: 'Khoa học tự nhiên chủ yếu nghiên cứu về đối tượng nào sau đây?',
+          options: [
+            { text: 'Các hiện tượng tự nhiên và quy luật của chúng.', isCorrect: true },
+            { text: 'Sản xuất và phương pháp kinh doanh tiền tệ.', isCorrect: false },
+            { text: 'Văn học, nghệ thuật và thi ca dân gian.', isCorrect: false },
+            { text: 'Ngôn ngữ các nước và lịch sử thế giới.', isCorrect: false }
+          ],
+          hint: 'KHTN nghiên cứu giới tự nhiên bao gồm vật chất, năng lượng, sinh vật...',
+          rationale: 'Khoa học tự nhiên là ngành khoa học nghiên cứu về các hiện tượng, quy luật tự nhiên, các dạng vật chất và sự vận động của chúng.'
+        },
+        {
+          id: 'chem-mcq-2',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN',
+          hasImage: true,
+          question: 'Biển báo cảnh báo an toàn trong phòng thực hành ở hình bên cho chúng ta biết điều gì?',
+          options: [
+            { text: 'Chất dễ cháy khi gặp lửa.', isCorrect: false },
+            { text: 'Chất gây nổ nguy hiểm.', isCorrect: false },
+            { text: 'Chất ăn mòn (ăn mòn kim loại và gây bỏng da).', isCorrect: true },
+            { text: 'Chỉ dẫn phải đeo găng tay thường xuyên.', isCorrect: false }
+          ],
+          hint: 'Hình vẽ minh họa chất lỏng rớt vào thanh vật liệu và rớt vào bàn tay làm tổn thương bề mặt.',
+          rationale: 'Biển báo màu cam/đỏ vẽ hai ống nghiệm nhỏ hóa chất làm rỉ thủng bề mặt kim loại và cháy bỏng da tay là biển báo "Chất ăn mòn" (Corrosive).'
+        },
+        {
+          id: 'chem-mcq-3',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN',
+          question: 'Đơn vị đo khối lượng chính thức trong hệ thống đo lường của nước Việt Nam là gì?',
+          options: [
+            { text: 'Tấn (kí hiệu: t).', isCorrect: false },
+            { text: 'Miligam (kí hiệu: mg).', isCorrect: false },
+            { text: 'Kilôgam (kí hiệu: kg).', isCorrect: true },
+            { text: 'Gam (kí hiệu: g).', isCorrect: false }
+          ],
+          hint: 'Kí hiệu chuẩn quốc tế thuộc hệ SI là kg.',
+          rationale: 'Theo quy định đo lường của Việt Nam và hệ đo lường quốc tế SI, kilôgam (kg) là đơn vị đo khối lượng hợp pháp.'
+        },
+        {
+          id: 'chem-mcq-4',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN',
+          question: 'Hoạt động nào sau đây là hoạt động nghiên cứu khoa học tự nhiên?',
+          options: [
+            { text: 'Tìm hiểu sự sinh trưởng của cây đậu trong các điều kiện ánh sáng khác nhau.', isCorrect: true },
+            { text: 'Sáng tác một bài thơ về cảnh đẹp thiên nhiên quê hương.', isCorrect: false },
+            { text: 'Vẽ tranh phong cảnh biển theo trí tưởng tượng phong phú.', isCorrect: false },
+            { text: 'Kê dọn và sắp xếp bàn ghế gọn gàng trong lớp học.', isCorrect: false }
+          ],
+          hint: 'Nghiên cứu KHTN phải gắn liền với quá trình quan sát, thí nghiệm để tìm ra tri thức khoa học mới.',
+          rationale: 'Tìm hiểu thực nghiệm về ánh sáng ảnh hưởng đến sinh trưởng cây xanh là hoạt động nghiên cứu tìm quy luật sinh học tự nhiên.'
+        },
+        {
+          id: 'chem-mcq-5',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN',
+          question: 'Dụng cụ thích hợp và chính xác nhất để đo khối lượng của một vật là gì?',
+          options: [
+            { text: 'Thước thẳng chia vạch.', isCorrect: false },
+            { text: 'Cân (cân đồng hồ, cân điện tử...).', isCorrect: true },
+            { text: 'Đồng hồ bấm giây.', isCorrect: false },
+            { text: 'Nhiệt kế thủy ngân.', isCorrect: false }
+          ],
+          hint: 'Thước đo chiều dài, đồng hồ đo thời gian, nhiệt kế đo nhiệt độ.',
+          rationale: 'Cân là dụng cụ chuyên dụng để đo khối lượng của các vật thể.'
+        },
+        {
+          id: 'chem-mcq-6',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN',
+          question: 'Hoạt động nào sau đây KHÔNG PHẢI là hoạt động nghiên cứu khoa học tự nhiên?',
+          options: [
+            { text: 'Khám phá các thành phần khoáng vật trong lớp vỏ Trái Đất.', isCorrect: false },
+            { text: 'Nghiên cứu tìm kiếm dấu vết sự sống trên các hành tinh khác.', isCorrect: false },
+            { text: 'Nghiên cứu cơ chế biến đổi chất trong lòng tự nhiên.', isCorrect: false },
+            { text: 'Trồng cây gây rừng để phủ xanh đồi trọc.', isCorrect: true }
+          ],
+          hint: 'Phân biệt giữa hoạt động nghiên cứu tìm tòi kiến thức với hoạt động lao động sản xuất ứng dụng.',
+          rationale: 'Trồng cây gây rừng là hoạt động lao động sản xuất và bảo vệ môi trường, không phải là hoạt động nghiên cứu khoa học nhằm phát hiện quy luật mới.'
+        },
+        {
+          id: 'chem-mcq-7',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN',
+          question: 'Hoạt động nào sau đây của con người là hoạt động nghiên cứu khoa học?',
+          options: [
+            { text: 'Hoạt động sinh hoạt tắm giặt hàng ngày trong gia đình.', isCorrect: false },
+            { text: 'Hoạt động học tập nghe giảng của học sinh trên lớp.', isCorrect: false },
+            { text: 'Hoạt động làm thí nghiệm điều chế chất mới trong phòng thí nghiệm.', isCorrect: true },
+            { text: 'Hoạt động thả diều vui chơi của các em nhỏ trên đồng.', isCorrect: false }
+          ],
+          hint: 'Nghiên cứu khoa học đòi hỏi phương pháp khoa học, thực nghiệm kiểm chứng giả thuyết.',
+          rationale: 'Thực hiện thí nghiệm điều chế chất mới có mục đích tìm tòi, sáng chế ra hợp chất mới là hoạt động nghiên cứu khoa học điển hình.'
+        },
+        {
+          id: 'chem-mcq-8',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN',
+          question: 'Vật nào sau đây được gọi là "vật sống"?',
+          options: [
+            { text: 'Xe máy phân khối lớn.', isCorrect: false },
+            { text: 'Cây hoa hồng đang nở hoa.', isCorrect: true },
+            { text: 'Người máy thông minh (robot).', isCorrect: false },
+            { text: 'Bình thủy tinh đựng nước uống.', isCorrect: false }
+          ],
+          hint: 'Vật sống có sinh trưởng, trao đổi chất, bài tiết, sinh sản và cảm ứng.',
+          rationale: 'Cây hoa hồng là sinh vật sống vì có quá trình quang hợp, hút nước, lớn lên và ra hoa sinh sản.'
+        },
+        {
+          id: 'chem-mcq-9',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN',
+          question: 'Có các vật thể sau: xe máy, xe đạp, con người, con suối, con trâu, cây dừa, thước kẻ. Số "vật sống" trong danh sách trên là bao nhiêu?',
+          options: [
+            { text: '1.', isCorrect: false },
+            { text: '2.', isCorrect: false },
+            { text: '3.', isCorrect: true },
+            { text: '4.', isCorrect: false }
+          ],
+          hint: 'Hãy lọc ra các sinh vật sống: con người, động vật, thực vật.',
+          rationale: 'Có 3 vật sống gồm: con người, con trâu, cây dừa. (Xe máy, xe đạp, con suối, thước kẻ là vật không sống).'
+        },
+
+        // TRẮC NGHIỆM ĐÚNG SAI
+        {
+          id: 'chem-tf-1',
+          type: 'tf',
+          section: 'II. TRẮC NGHIỆM KHÁCH QUAN "ĐÚNG - SAI"',
+          prompt: 'Những hoạt động sau đây CÓ GÂY NGUY HIỂM khi vào phòng thực hành hay không? Hãy xác định Đúng (nếu gây nguy hiểm) hoặc Sai (nếu an toàn/đúng quy tắc):',
+          statements: [
+            { id: 's1', text: 'A. Nhờ giáo viên kiểm tra mạch điện trước khi bật nguồn điện.', isCorrect: false, rationale: 'Sai (đây là hành động an toàn, tuân thủ đúng quy tắc phòng thực hành, KHÔNG gây nguy hiểm).' },
+            { id: 's2', text: 'B. Dùng tay ướt cắm phích điện vào nguồn điện.', isCorrect: true, rationale: 'Đúng (đây là hành vi cực kỳ nguy hiểm, nước dẫn điện dễ gây điện giật chết người).' },
+            { id: 's3', text: 'C. Thực hiện thao tác thí nghiệm hóa chất nhanh, mạnh và ẩu đả.', isCorrect: true, rationale: 'Đúng (thao tác vội vàng dễ làm đổ vỡ hóa chất ăn mòn, gây nổ hoặc vỡ thủy tinh).' },
+            { id: 's4', text: 'D. Rửa sạch da dưới vòi nước chảy ngay khi bị dính hóa chất.', isCorrect: false, rationale: 'Sai (đây là biện pháp sơ cứu chuẩn xác và an toàn, KHÔNG gây nguy hiểm).' }
+          ]
+        },
+        {
+          id: 'chem-tf-2',
+          type: 'tf',
+          section: 'II. TRẮC NGHIỆM KHÁCH QUAN "ĐÚNG - SAI"',
+          prompt: 'Quy tắc an toàn trong phòng thực hành KHTN. Xác định tính Đúng / Sai của từng nhận định:',
+          statements: [
+            { id: 's1', text: 'A) Có thể tự ý nếm thử hóa chất trong phòng thực hành nếu muốn biết mùi vị của chất.', isCorrect: false, rationale: 'Sai: Tuyệt đối không bao giờ được nếm, ngửi trực tiếp hóa chất vì có thể gây ngộ độc nghiêm trọng.' },
+            { id: 's2', text: 'B) Cần đọc kĩ hướng dẫn và tuân thủ nghiêm ngặt nội quy phòng thực hành.', isCorrect: true, rationale: 'Đúng: Giúp đảm bảo an toàn tuyệt đối cho bản thân, bạn bè và thiết bị.' },
+            { id: 's3', text: 'C) Khi không may làm vỡ dụng cụ thủy tinh, cần báo ngay cho giáo viên để xử lý an toàn.', isCorrect: true, rationale: 'Đúng: Mảnh vỡ thủy tinh sắc nhọn rất nguy hiểm cần được xử lý theo quy định y tế.' },
+            { id: 's4', text: 'D) Có thể tự do chạy nhảy, đùa nghịch trong phòng thực hành nếu chưa làm thí nghiệm nguy hiểm.', isCorrect: false, rationale: 'Sai: Phòng thực hành chứa nhiều máy móc, bình hóa chất, việc chạy nhảy đùa nghịch bị nghiêm cấm hoàn toàn.' }
+          ]
+        },
+        {
+          id: 'chem-tf-3',
+          type: 'tf',
+          section: 'II. TRẮC NGHIỆM KHÁCH QUAN "ĐÚNG - SAI"',
+          prompt: 'Cho các vật thể sau: con gà, con sông, cái bàn, cây xoài. Xét tính Đúng - Sai của từng câu sau:',
+          statements: [
+            { id: 's1', text: 'a) Con gà là vật sống.', isCorrect: true, rationale: 'Đúng: Con gà là động vật, có trao đổi chất, sinh sản, lớn lên.' },
+            { id: 's2', text: 'b) Con sông là vật không sống.', isCorrect: true, rationale: 'Đúng: Dòng sông là thể nước tự nhiên vô sinh, không có tế bào hay cấu trúc sống.' },
+            { id: 's3', text: 'c) Cây xoài là vật không sống.', isCorrect: false, rationale: 'Sai: Cây xoài là thực vật sống có khả năng quang hợp và sinh trưởng.' },
+            { id: 's4', text: 'd) Con gà, cây xoài là vật sống còn con sông, cái bàn là vật không sống.', isCorrect: true, rationale: 'Đúng: Phân loại hoàn toàn chính xác theo các dấu hiệu của sự sống.' }
+          ]
+        },
+
+        // TỰ LUẬN HÓA HỌC / ĐO LƯỜNG
+        {
+          id: 'chem-essay-1',
+          type: 'essay',
+          section: 'III. PHẦN TỰ LUẬN',
+          question: 'Câu 1:\na) Đổi các đơn vị sau: 80 km = ........ m ; 100 mm = ........ m\nb) Bạn A đi quãng đường từ nhà đến trường dài 100 m. Một hôm bạn A đi được 25 m thì bị đau chân nên dừng lại. Hỏi quãng đường còn lại bạn A tiếp tục đi đến trường là bao nhiêu centimet (cm)?',
+          hint: '1 km = 1000 m; 1 m = 1000 mm. Lưu ý câu b hỏi đơn vị centimet (1 m = 100 cm).',
+          modelAnswer: `a) Đổi đơn vị độ dài:\n- 80 km = 80 × 1000 m = 80 000 m\n- 100 mm = 100 : 1000 m = 0,1 m\n\nb) Tính quãng đường còn lại:\n- Quãng đường còn lại tính theo mét là:\n   100 m - 25 m = 75 (m)\n- Đổi từ mét sang centimet (1 m = 100 cm):\n   75 m = 75 × 100 = 7 500 (cm)\nĐáp số: 7 500 cm.`
+        },
+        {
+          id: 'chem-essay-2',
+          type: 'essay',
+          section: 'III. PHẦN TỰ LUẬN',
+          question: 'Câu 2:\na) Đổi các đơn vị sau: 10 m = ........ mm ; 100 m = ........ km\nb) Bạn A đi quãng đường từ nhà đến trường dài 2000 m. Một hôm bạn A đi được 500 m thì dừng lại nghỉ. Hỏi quãng đường còn lại bạn A phải tiếp tục đi đến trường là bao nhiêu kilômét (km)?',
+          hint: '1 m = 1000 mm; 1 km = 1000 m. Lấy 2000 m - 500 m rồi đổi sang km.',
+          modelAnswer: `a) Đổi đơn vị:\n- 10 m = 10 × 1000 mm = 10 000 mm\n- 100 m = 100 : 1000 km = 0,1 km\n\nb) Tính quãng đường còn lại:\n- Quãng đường còn lại tính bằng mét:\n   2000 m - 500 m = 1500 (m)\n- Đổi kết quả sang kilômét:\n   1500 m = 1500 : 1000 = 1,5 (km)\nĐáp số: 1,5 km.`
+        },
+        {
+          id: 'chem-essay-3',
+          type: 'essay',
+          section: 'III. PHẦN TỰ LUẬN',
+          question: 'Câu 3: Một xe tải chở mì khi lên trạm cân thì số chỉ của cân là 4,3 tấn. Sau khi dỡ hết số mì trên xe xuống và đưa xe không lên cân lại thì xe có khối lượng là 680 kg. Hỏi khối lượng của số mì đó là bao nhiêu kilôgam (kg)? Bao nhiêu gam (g)?',
+          hint: 'Đổi 4,3 tấn sang kg. Khối lượng mì = Khối lượng tổng cộng (xe + mì) - Khối lượng xe không. Sau đó nhân 1000 để ra gam.',
+          modelAnswer: `Lời giải chi tiết:\n1. Đổi đơn vị về kilôgam:\n   4,3 tấn = 4,3 × 1000 = 4 300 kg\n\n2. Khối lượng của số mì trên xe là:\n   4 300 - 680 = 3 620 (kg)\n\n3. Đổi sang đơn vị gam:\n   3 620 kg = 3 620 × 1000 = 3 620 000 (g)\n\nĐáp số:\n- 3 620 kg\n- 3 620 000 g`
+        }
+      ],
+
+      physics: [
+        // TRẮC NGHIỆM VẬT LÍ (LỰC)
+        {
+          id: 'phys-mcq-1',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN',
+          question: 'Đơn vị chính thức dùng để đo lực trong hệ đo lường là gì?',
+          options: [
+            { text: 'Đêximet (dm).', isCorrect: false },
+            { text: 'Niutơn (kí hiệu: N).', isCorrect: true },
+            { text: 'Kilôgam (kg).', isCorrect: false },
+            { text: 'Mét khối (m³).', isCorrect: false }
+          ],
+          hint: 'Đơn vị được đặt theo tên của nhà bác học vĩ đại người Anh tìm ra định luật vạn vật hấp dẫn.',
+          rationale: 'Đơn vị đo lực là Niutơn, kí hiệu chữ N viết hoa.'
+        },
+        {
+          id: 'phys-mcq-2',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN',
+          question: 'Một bạn học sinh dùng ngón tay bóp mạnh vào một quả bóng cao su nhỏ thì quả bóng bị:',
+          options: [
+            { text: 'Bị biến dạng.', isCorrect: true },
+            { text: 'Biến đổi chuyển động nhanh dần.', isCorrect: false },
+            { text: 'Vừa biến đổi chuyển động và vừa bị nóng chảy.', isCorrect: false },
+            { text: 'Không bị biến đổi gì cả.', isCorrect: false }
+          ],
+          hint: 'Quả bóng cao su mềm, khi bị tay ép vào thì hình dạng tròn ban đầu bị thay đổi móp méo.',
+          rationale: 'Lực tay tác dụng làm thay đổi hình dạng quả bóng cao su, hiện tượng này gọi là làm vật bị biến dạng.'
+        },
+        {
+          id: 'phys-mcq-3',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN',
+          question: 'Trong vật lí, lực là gì?',
+          options: [
+            { text: 'Sự tác dụng đẩy hoặc kéo của vật này lên vật khác.', isCorrect: true },
+            { text: 'Khả năng phát sáng trong bóng tối của vật.', isCorrect: false },
+            { text: 'Độ nóng hay lạnh của một vật thể.', isCorrect: false },
+            { text: 'Độ lớn thể tích không gian mà vật chiếm chỗ.', isCorrect: false }
+          ],
+          hint: 'Tác dụng đẩy hoặc kéo của vật này lên vật khác gọi là lực.',
+          rationale: 'Định nghĩa: Tác dụng đẩy hoặc kéo của vật này lên vật khác được gọi là lực.'
+        },
+        {
+          id: 'phys-mcq-4',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN',
+          question: 'Khi biểu diễn một lực bằng mũi tên, chiều của mũi tên cho biết điều gì?',
+          options: [
+            { text: 'Độ lớn (cường độ) của lực.', isCorrect: false },
+            { text: 'Điểm đặt của lực.', isCorrect: false },
+            { text: 'Chiều của lực tác dụng.', isCorrect: true },
+            { text: 'Tên của vật chịu tác dụng của lực.', isCorrect: false }
+          ],
+          hint: 'Đầu nhọn của mũi tên hướng theo hướng nào thì thể hiện chiều của lực theo hướng đó.',
+          rationale: 'Mũi tên biểu diễn lực có gốc là điểm đặt, phương và chiều mũi tên chỉ phương và chiều của lực, độ dài biểu diễn độ lớn theo tỉ xích.'
+        },
+        {
+          id: 'phys-mcq-5',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN',
+          question: 'Khi dùng tay kéo một chiếc lò xo, lò xo bị dài ra. Đây là biểu hiện kết quả tác dụng nào của lực?',
+          options: [
+            { text: 'Làm thay đổi màu sắc bề mặt lò xo.', isCorrect: false },
+            { text: 'Làm vật phát ra ánh sáng.', isCorrect: false },
+            { text: 'Làm tăng nhiệt độ bên trong lò xo.', isCorrect: false },
+            { text: 'Làm vật bị biến dạng.', isCorrect: true }
+          ],
+          hint: 'Chiều dài và hình dạng ban đầu của lò xo bị thay đổi.',
+          rationale: 'Chiều dài của lò xo tăng lên so với ban đầu thể hiện lò xo đã bị biến dạng dưới tác dụng của lực kéo.'
+        },
+        {
+          id: 'phys-mcq-6',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN',
+          question: 'Khi một vận động viên bắt đầu đẩy quả tạ văng đi xa, vận động viên đã tác dụng vào quả tạ một:',
+          options: [
+            { text: 'Lực đẩy.', isCorrect: true },
+            { text: 'Lực nén.', isCorrect: false },
+            { text: 'Lực kéo.', isCorrect: false },
+            { text: 'Lực uốn.', isCorrect: false }
+          ],
+          hint: 'Vận động viên dùng bàn tay duỗi mạnh cánh tay để đẩy quả tạ về phía trước.',
+          rationale: 'Cánh tay tác dụng lực hướng ra xa cơ thể đẩy quả tạ chuyển động, đó là lực đẩy.'
+        },
+        {
+          id: 'phys-mcq-7',
+          type: 'mcq',
+          section: 'I. TRẮC NGHIỆM LỰA CHỌN',
+          question: 'Lực nào sau đây là LỰC TIẾP XÚC?',
+          options: [
+            { text: 'Lực hút của Trái Đất tác dụng lên bóng đèn treo trên trần nhà.', isCorrect: false },
+            { text: 'Lực của nam châm hút thanh sắt đặt cách nó một đoạn.', isCorrect: false },
+            { text: 'Lực của quả cân tác dụng vào móc lò xo khi móc quả cân vào lò xo.', isCorrect: true },
+            { text: 'Lực hấp dẫn giữa Trái Đất và Mặt Trăng.', isCorrect: false }
+          ],
+          hint: 'Lực tiếp xúc xuất hiện khi vật gây ra lực và vật chịu lực chạm trực tiếp vào nhau.',
+          rationale: 'Móc của quả cân chạm tiếp xúc trực tiếp vào đầu móc lò xo nên lực này là lực tiếp xúc. (Trọng lực và từ lực ở các câu kia là lực không tiếp xúc).'
+        },
+
+        // TRẮC NGHIỆM ĐÚNG SAI
+        {
+          id: 'phys-tf-1',
+          type: 'tf',
+          section: 'II. TRẮC NGHIỆM KHÁCH QUAN "ĐÚNG - SAI"',
+          prompt: 'Biến dạng của lò xo. Hãy xác định từng nhận định sau là Đúng hay Sai:',
+          statements: [
+            { id: 's1', text: 'A) Lò xo có thể bị biến dạng khi chịu tác dụng của lực kéo hoặc nén.', isCorrect: true, rationale: 'Đúng: Lực kéo làm lò xo dãn, lực nén làm lò xo co ngắn lại.' },
+            { id: 's2', text: 'B) Khi thôi tác dụng lực, lò xo luôn luôn giữ nguyên độ biến dạng biến mất hình dạng cũ.', isCorrect: false, rationale: 'Sai: Lò xo có tính đàn hồi, khi thôi lực nó có xu hướng tự phục hồi lại hình dạng ban đầu.' },
+            { id: 's3', text: 'C) Trong giới hạn đàn hồi, lò xo có thể trở lại hình dạng ban đầu khi thôi tác dụng lực.', isCorrect: true, rationale: 'Đúng: Đây chính là định nghĩa về tính chất đàn hồi trong giới hạn cho phép.' },
+            { id: 's4', text: 'D) Kéo lò xo càng mạnh thì trong mọi trường hợp lò xo đều chắc chắn trở về hình dạng ban đầu.', isCorrect: false, rationale: 'Sai: Nếu kéo quá mạnh vượt qua "giới hạn đàn hồi", lò xo sẽ bị biến dạng vĩnh viễn và không thể trở về ban đầu được nữa.' }
+          ]
+        },
+        {
+          id: 'phys-tf-2',
+          type: 'tf',
+          section: 'II. TRẮC NGHIỆM KHÁCH QUAN "ĐÚNG - SAI"',
+          prompt: 'Cho các vật sau đây: dây thun, viên gạch, ly thủy tinh, phuộc xe máy. Hãy xét tính đúng sai khi nói về hiện tượng biến dạng có tính đàn hồi (như lò xo):',
+          statements: [
+            { id: 's1', text: 'A. Dây thun có khả năng biến dạng đàn hồi giống lò xo còn viên gạch thì không.', isCorrect: true, rationale: 'Đúng: Dây thun dãn ra khi kéo và co lại khi buông, viên gạch là vật rắn cứng không đàn hồi kiểu này.' },
+            { id: 's2', text: 'B. Viên gạch và phuộc xe máy đều không có hiện tượng biến dạng kiểu lò xo.', isCorrect: false, rationale: 'Sai: Phuộc xe máy bên trong chứa lò xo giảm xóc đàn hồi rất rõ rệt.' },
+            { id: 's3', text: 'C. Ly thủy tinh và phuộc xe máy đều biến dạng đàn hồi kiểu lò xo.', isCorrect: false, rationale: 'Sai: Thủy tinh là vật rắn giòn, chịu lực mạnh sẽ vỡ vụn chứ không co dãn như lò xo.' },
+            { id: 's4', text: 'D. Phuộc xe máy biến dạng kiểu lò xo còn ly thủy tinh thì không.', isCorrect: true, rationale: 'Đúng: Phuộc xe máy sử dụng lò xo giảm xóc đàn hồi, ly thủy tinh là vật liệu giòn.' }
+          ]
+        },
+        {
+          id: 'phys-tf-3',
+          type: 'tf',
+          section: 'II. TRẮC NGHIỆM KHÁCH QUAN "ĐÚNG - SAI"',
+          prompt: 'Một lò xo có chiều dài ban đầu tự nhiên là 10 cm. Khi treo một quả nặng, chiều dài của lò xo đo được là 13 cm. Xác định tính Đúng / Sai của các phát biểu sau:',
+          statements: [
+            { id: 's1', text: 'a) Lò xo đã dài thêm một đoạn là 3 cm so với chiều dài ban đầu.', isCorrect: true, rationale: 'Đúng: Độ dãn thêm = 13 cm - 10 cm = 3 cm.' },
+            { id: 's2', text: 'b) Độ dãn của lò xo lúc này là 13 cm.', isCorrect: false, rationale: 'Sai: 13 cm là tổng chiều dài của lò xo khi biến dạng, độ dãn (độ biến dạng) chỉ là 3 cm.' },
+            { id: 's3', text: 'c) Nếu bỏ quả nặng ra và lò xo trở lại chiều dài 10 cm ban đầu thì độ dãn của lò xo bằng 0 cm.', isCorrect: true, rationale: 'Đúng: Chiều dài trở về bằng chiều dài tự nhiên thì độ biến dạng (độ dãn) bằng 0.' },
+            { id: 's4', text: 'd) Nếu tiếp tục treo thêm nhiều quả nặng rất lớn, lò xo chắc chắn sẽ luôn luôn trở lại hình dạng ban đầu sau khi bỏ hết quả nặng.', isCorrect: false, rationale: 'Sai: Nếu tải trọng quá lớn vượt quá giới hạn đàn hồi thì lò xo sẽ bị dãn đứt hoặc biến dạng vĩnh viễn.' }
+          ]
+        },
+
+        // TỰ LUẬN VẬT LÍ
+        {
+          id: 'phys-essay-1',
+          type: 'essay',
+          section: 'III. PHẦN TỰ LUẬN',
+          question: 'Câu 1:\na) Lực là gì?\nb) Đơn vị đo lực là gì? Kí hiệu như thế nào?\nc) Dụng cụ dùng để đo độ lớn của lực là gì?',
+          hint: 'Nhớ lại khái niệm lực đẩy/kéo, đơn vị Niutơn (N), dụng cụ có chứa lò xo và bảng chia độ.',
+          modelAnswer: `a) Lực là tác dụng đẩy hoặc kéo của vật này lên vật khác.\n\nb) Đơn vị đo lực là Niutơn. Kí hiệu là N.\n\nc) Dụng cụ dùng để đo lực trong phòng thí nghiệm và đời sống là Lực kế.`
+        },
+        {
+          id: 'phys-essay-2',
+          type: 'essay',
+          section: 'III. PHẦN TỰ LUẬN',
+          question: 'Câu 2:\na) Nêu 4 đặc trưng cơ bản của lực?\nb) Có một bạn dùng dây kéo một quả bóng từ mặt đất lên ban công tầng 1. Hãy xác định phương và chiều của lực kéo tác dụng vào quả bóng?',
+          hint: '4 đặc trưng: điểm đặt, phương, chiều, độ lớn. Kéo từ dưới đất thẳng lên tầng 1.',
+          modelAnswer: `a) 4 đặc trưng của một lực gồm:\n1. Điểm đặt của lực (vị trí lực tác dụng lên vật).\n2. Phương của lực (đường thẳng mang lực tác dụng: thẳng đứng, nằm ngang, xiên...).\n3. Chiều của lực (hướng tác dụng: từ dưới lên trên, từ trái sang phải...).\n4. Độ lớn của lực (cường độ mạnh hay yếu của lực, đo bằng đơn vị N).\n\nb) Khi kéo quả bóng từ mặt đất lên ban công tầng 1:\n- Phương của lực kéo: Phương thẳng đứng.\n- Chiều của lực kéo: Chiều từ dưới lên trên.`
+        },
+        {
+          id: 'phys-essay-3',
+          type: 'essay',
+          section: 'III. PHẦN TỰ LUẬN',
+          question: 'Câu 3: Lực tác dụng vào một vật có thể gây ra những kết quả gì? Nêu ví dụ thực tế minh họa cho từng trường hợp?',
+          hint: 'Lực có thể làm thay đổi chuyển động (vận tốc, hướng), làm biến dạng, hoặc xảy ra đồng thời cả hai.',
+          modelAnswer: `Lực tác dụng vào một vật có thể gây ra các kết quả sau:\n\n1. Làm biến đổi chuyển động của vật:\n- Làm vật đang đứng yên bắt đầu chuyển động (Ví dụ: Cầu thủ đá vào quả bóng đang nằm yên làm bóng bay đi).\n- Làm vật chuyển động nhanh lên hoặc chậm lại (Ví dụ: Bóp phanh xe đạp làm xe chạy chậm dần rồi dừng lại).\n- Làm đổi hướng chuyển động của vật (Ví dụ: Thủ môn dùng tay đẩy làm bóng bay chệch hướng sang khung thành).\n\n2. Làm biến dạng vật:\n- Làm vật thay đổi kích thước hoặc hình dạng (Ví dụ: Dùng tay bóp bẹp vỏ lon nước ngọt hoặc kéo dãn lò xo).\n\n3. Đồng thời vừa làm biến đổi chuyển động vừa làm biến dạng vật:\n- Ví dụ: Khi thủ môn bắt bóng mạnh, quả bóng vừa bị bóp méo tạm thời (biến dạng) vừa bị dừng lại đổi trạng thái (biến đổi chuyển động).`
+        }
+      ]
+    };
+
+    // State Management
+    let currentSubject = 'biology';
+    let currentFilter = 'all';
+    let userAnswers = {};
+    let earnedPoints = 0;
+
+    // Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      renderAllSubjects();
+      updateCounters();
+    });
+
+    function switchTab(subject) {
+      currentSubject = subject;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-white/15', 'text-white', 'border-white');
+        btn.classList.add('text-emerald-100', 'border-transparent');
+      });
+      const activeBtn = document.getElementById(`tab-btn-${subject}`);
+      activeBtn.classList.add('bg-white/15', 'text-white', 'border-white');
+      activeBtn.classList.remove('text-emerald-100', 'border-transparent');
+
+      document.querySelectorAll('.subject-section').forEach(sec => sec.classList.add('hidden'));
+      document.getElementById(`subject-${subject}`).classList.remove('hidden');
+
+      filterType(currentFilter);
+    }
+
+    function filterType(type) {
+      currentFilter = type;
+      document.querySelectorAll('.filter-pill').forEach(pill => {
+        if (pill.getAttribute('data-filter') === type) {
+          pill.className = 'filter-pill bg-emerald-600 text-white px-2.5 py-1 rounded-full font-medium';
+        } else {
+          pill.className = 'filter-pill bg-slate-100 text-slate-600 hover:bg-slate-200 px-2.5 py-1 rounded-full font-medium';
+        }
+      });
+
+      const cards = document.querySelectorAll(`#subject-${currentSubject} .question-card`);
+      cards.forEach(card => {
+        const cType = card.getAttribute('data-type');
+        if (type === 'all' || cType === type) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+
+    function renderAllSubjects() {
+      ['biology', 'chemistry', 'physics'].forEach(sub => {
+        const container = document.getElementById(`subject-${sub}`);
+        container.innerHTML = '';
+        const list = questionBank[sub];
+
+        let currentSectionHeader = '';
+        list.forEach((item, index) => {
+          if (item.section && item.section !== currentSectionHeader) {
+            currentSectionHeader = item.section;
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'pt-4 pb-2 border-b-2 border-emerald-500/30 flex items-center gap-2 text-emerald-800 font-bold text-base sm:text-lg';
+            headerDiv.innerHTML = `<span class="w-2.5 h-6 bg-emerald-600 rounded-full inline-block"></span> ${currentSectionHeader}`;
+            container.appendChild(headerDiv);
+          }
+
+          const card = createQuestionCard(item, index + 1, sub);
+          container.appendChild(card);
+        });
+      });
+    }
+
+    function createQuestionCard(item, displayIndex, subject) {
+      const card = document.createElement('div');
+      card.className = 'question-card bg-white rounded-2xl p-5 border border-slate-200 shadow-sm transition hover:shadow-md';
+      card.id = `card-${item.id}`;
+      card.setAttribute('data-type', item.type);
+
+      let innerHtml = `
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-lg">Câu ${displayIndex}</span>
+            <span class="text-xs text-slate-400 font-medium uppercase tracking-wider">${getTypeLabel(item.type)}</span>
+          </div>
+          <div class="status-badge text-xs font-semibold px-2 py-0.5 rounded-md hidden" id="status-${item.id}"></div>
+        </div>
+      `;
+
+      // Chemistry Q2 Hazard Icon
+      if (item.hasImage) {
+        innerHtml += `
+          <div class="my-3 p-3 bg-amber-50 rounded-xl border border-amber-200 flex items-center justify-center">
+            <div class="w-32 h-32 bg-orange-500 border-4 border-black p-2 flex flex-col items-center justify-between rounded shadow-inner text-black font-bold text-center">
+              <div class="flex justify-between w-full px-2">
+                <i class="fa-solid fa-vial-virus text-2xl"></i>
+                <i class="fa-solid fa-hand-dots text-2xl"></i>
+              </div>
+              <div class="text-[11px] leading-tight bg-white px-1 py-0.5 rounded border border-black uppercase font-black">
+                BIỂN BÁO: CHẤT ĂN MÒN
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // Render based on Question Type
+      if (item.type === 'mcq') {
+        innerHtml += `
+          <p class="font-medium text-slate-800 text-sm sm:text-base leading-relaxed mb-4">${escapeHtml(item.question)}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-4">
+            ${item.options.map((opt, oIdx) => `
+              <button onclick="handleSelectMCQ('${item.id}', ${oIdx}, '${subject}')" id="btn-${item.id}-${oIdx}" class="mcq-option text-left px-3.5 py-2.5 rounded-xl border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/50 text-xs sm:text-sm font-normal transition duration-150 flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full border border-slate-300 flex items-center justify-center text-xs font-semibold text-slate-600 shrink-0 bg-slate-50">${String.fromCharCode(65 + oIdx)}</span>
+                <span class="opt-text">${escapeHtml(opt.text)}</span>
+              </button>
+            `).join('')}
+          </div>
+        `;
+      } else if (item.type === 'tf') {
+        innerHtml += `
+          <p class="font-medium text-slate-800 text-sm sm:text-base leading-relaxed mb-3">${escapeHtml(item.prompt)}</p>
+          <div class="space-y-3 mb-4">
+            ${item.statements.map((stmt, sIdx) => `
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm">
+                <div class="text-slate-700 font-normal leading-snug flex-1">${escapeHtml(stmt.text)}</div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <button onclick="setTFChoice('${item.id}', '${stmt.id}', true)" id="tf-btn-${item.id}-${stmt.id}-true" class="tf-btn px-3 py-1 rounded-lg border border-slate-300 bg-white hover:bg-emerald-50 font-medium text-xs">Đúng</button>
+                  <button onclick="setTFChoice('${item.id}', '${stmt.id}', false)" id="tf-btn-${item.id}-${stmt.id}-false" class="tf-btn px-3 py-1 rounded-lg border border-slate-300 bg-white hover:bg-rose-50 font-medium text-xs">Sai</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="flex justify-end mb-2">
+            <button onclick="checkTFQuestion('${item.id}', '${subject}')" class="bg-teal-600 hover:bg-teal-700 text-white text-xs sm:text-sm font-medium px-4 py-2 rounded-xl transition shadow-sm">
+              <i class="fa-solid fa-check-double mr-1.5"></i>Kiểm tra kết quả Đúng / Sai
+            </button>
+          </div>
+        `;
+      } else if (item.type === 'short') {
+        innerHtml += `
+          <p class="font-medium text-slate-800 text-sm sm:text-base leading-relaxed mb-3">${escapeHtml(item.question)}</p>
+          <div class="flex flex-wrap items-center gap-2 mb-4">
+            <input type="text" id="input-${item.id}" placeholder="Nhập câu trả lời (con số)..." class="border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 w-full sm:w-64" onkeydown="if(event.key==='Enter') checkShortAnswer('${item.id}', '${subject}')">
+            <button onclick="checkShortAnswer('${item.id}', '${subject}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-medium px-4 py-2 rounded-xl transition shadow-sm">
+              <i class="fa-solid fa-paper-plane mr-1.5"></i>Kiểm tra
+            </button>
+          </div>
+        `;
+      } else if (item.type === 'essay') {
+        innerHtml += `
+          <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 mb-3">
+            <p class="font-medium text-slate-800 text-sm sm:text-base whitespace-pre-line leading-relaxed">${escapeHtml(item.question)}</p>
+          </div>
+          <div class="mb-3">
+            <label class="block text-xs font-semibold text-slate-600 mb-1.5 flex items-center justify-between">
+              <span><i class="fa-solid fa-pen-fancy text-emerald-600 mr-1.5"></i>Góc soạn thảo bài làm của học sinh:</span>
+              <span class="text-[11px] text-slate-400 font-normal">Học sinh tự gõ để rèn luyện kỹ năng tự luận</span>
+            </label>
+            <textarea id="essay-input-${item.id}" rows="4" class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 font-mono" placeholder="Gõ câu trả lời, công thức tính toán hoặc ý chính của em tại đây..."></textarea>
+          </div>
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <button onclick="toggleHint('${item.id}')" class="text-xs text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+              <i class="fa-regular fa-lightbulb"></i>Gợi ý giải bài
+            </button>
+            <button onclick="toggleEssayModel('${item.id}')" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs sm:text-sm font-medium px-4 py-1.5 rounded-xl transition shadow-sm flex items-center gap-1.5">
+              <i class="fa-solid fa-circle-check"></i>Đối chiếu đáp án mẫu & Hướng dẫn chấm
+            </button>
+          </div>
+          <div id="essay-model-${item.id}" class="hidden mt-3 p-4 bg-emerald-50/80 border border-emerald-300 rounded-xl text-xs sm:text-sm leading-relaxed">
+            <div class="font-bold text-emerald-800 mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-clipboard-check"></i> ĐÁP ÁN VÀ THANG ĐIỂM CHUẨN:
+            </div>
+            <div class="whitespace-pre-line text-slate-800 bg-white p-3 rounded-lg border border-emerald-200 mb-3">${escapeHtml(item.modelAnswer)}</div>
+            <div class="flex items-center justify-between pt-2 border-t border-emerald-200 text-xs">
+              <span class="text-emerald-900 font-medium">Tự đánh giá bài làm của em:</span>
+              <div class="space-x-2">
+                <button onclick="markSelfEssay('${item.id}', true)" class="px-2.5 py-1 bg-emerald-600 text-white rounded-md font-semibold hover:bg-emerald-700">Đã hiểu & Đạt yêu cầu</button>
+                <button onclick="markSelfEssay('${item.id}', false)" class="px-2.5 py-1 bg-slate-200 text-slate-700 rounded-md hover:bg-slate-300">Cần ôn tập thêm</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // Hint & Feedback Boxes
+      innerHtml += `
+        <!-- Hint Panel -->
+        <div id="hint-${item.id}" class="hidden mt-3 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-start gap-2">
+          <i class="fa-solid fa-lightbulb text-amber-600 mt-0.5"></i>
+          <div><strong class="font-semibold">Gợi ý tư duy:</strong> ${escapeHtml(item.hint || 'Đọc kỹ đề bài và đối chiếu với kiến thức SGK bài học tương ứng.')}</div>
+        </div>
+
+        <!-- Feedback Panel -->
+        <div id="feedback-${item.id}" class="hidden mt-3 p-3 rounded-xl text-xs leading-relaxed"></div>
+      `;
+
+      // Standard Hint Toggle Button for MCQ and Short Answer
+      if (item.type !== 'essay') {
+        innerHtml += `
+          <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs text-slate-400 mt-3">
+            <button onclick="toggleHint('${item.id}')" class="text-slate-500 hover:text-amber-600 flex items-center gap-1 transition">
+              <i class="fa-regular fa-lightbulb text-amber-500"></i> Xem gợi ý
+            </button>
+            <span class="text-[11px] text-slate-400">KHTN 6 - Giữa Kỳ I</span>
+          </div>
+        `;
+      }
+
+      card.innerHTML = innerHtml;
+      return card;
+    }
+
+    function getTypeLabel(type) {
+      switch (type) {
+        case 'mcq': return 'Trắc nghiệm 4 lựa chọn';
+        case 'tf': return 'Trắc nghiệm Đúng - Sai';
+        case 'short': return 'Trả lời ngắn';
+        case 'essay': return 'Tự luận';
+        default: return '';
+      }
+    }
+
+    // MCQ Click Handling
+    function handleSelectMCQ(qId, selectedIdx, subject) {
+      const q = questionBank[subject].find(item => item.id === qId);
+      if (!q) return;
+
+      const card = document.getElementById(`card-${qId}`);
+      const feedbackBox = document.getElementById(`feedback-${qId}`);
+      const statusBadge = document.getElementById(`status-${qId}`);
+
+      // Disable other option buttons to show final feedback
+      const isCorrect = q.options[selectedIdx].isCorrect;
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.getElementById(`btn-${qId}-${idx}`);
+        btn.disabled = true;
+        btn.classList.remove('hover:border-emerald-400', 'hover:bg-emerald-50/50');
+        if (opt.isCorrect) {
+          btn.className = 'mcq-option text-left px-3.5 py-2.5 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 text-xs sm:text-sm font-semibold flex items-center gap-2';
+        } else if (idx === selectedIdx) {
+          btn.className = 'mcq-option text-left px-3.5 py-2.5 rounded-xl border-2 border-rose-400 bg-rose-50 text-rose-900 text-xs sm:text-sm font-normal flex items-center gap-2';
+        }
+      });
+
+      statusBadge.classList.remove('hidden');
+      feedbackBox.classList.remove('hidden');
+
+      if (isCorrect) {
+        statusBadge.className = 'status-badge text-xs font-semibold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800';
+        statusBadge.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i>Chính xác (+10đ)';
+        feedbackBox.className = 'mt-3 p-3 rounded-xl text-xs bg-emerald-50 border border-emerald-200 text-emerald-900';
+        feedbackBox.innerHTML = `<strong>Tuyệt vời!</strong> ${escapeHtml(q.rationale)}`;
+        if (!userAnswers[qId]) {
+          earnedPoints += 10;
+        }
+      } else {
+        statusBadge.className = 'status-badge text-xs font-semibold px-2 py-0.5 rounded-md bg-rose-100 text-rose-800';
+        statusBadge.innerHTML = '<i class="fa-solid fa-circle-xmark mr-1"></i>Chưa đúng';
+        feedbackBox.className = 'mt-3 p-3 rounded-xl text-xs bg-rose-50 border border-rose-200 text-rose-900';
+        feedbackBox.innerHTML = `<strong>Giải thích chi tiết:</strong> ${escapeHtml(q.rationale)}`;
+      }
+
+      userAnswers[qId] = { selected: selectedIdx, isCorrect: isCorrect };
+      updateScoreCounter();
+    }
+
+    // True/False Handling
+    let tfState = {}; // tfState[qId][stmtId] = true/false
+    function setTFChoice(qId, stmtId, value) {
+      if (!tfState[qId]) tfState[qId] = {};
+      tfState[qId][stmtId] = value;
+
+      const trueBtn = document.getElementById(`tf-btn-${qId}-${stmtId}-true`);
+      const falseBtn = document.getElementById(`tf-btn-${qId}-${stmtId}-false`);
+
+      if (value === true) {
+        trueBtn.className = 'tf-btn px-3 py-1 rounded-lg border border-emerald-600 bg-emerald-600 text-white font-bold text-xs shadow-sm';
+        falseBtn.className = 'tf-btn px-3 py-1 rounded-lg border border-slate-300 bg-white font-medium text-xs text-slate-700';
+      } else {
+        falseBtn.className = 'tf-btn px-3 py-1 rounded-lg border border-rose-600 bg-rose-600 text-white font-bold text-xs shadow-sm';
+        trueBtn.className = 'tf-btn px-3 py-1 rounded-lg border border-slate-300 bg-white font-medium text-xs text-slate-700';
+      }
+    }
+
+    function checkTFQuestion(qId, subject) {
+      const q = questionBank[subject].find(item => item.id === qId);
+      if (!q) return;
+
+      const currentAnswers = tfState[qId] || {};
+      const unanswered = q.statements.filter(s => currentAnswers[s.id] === undefined);
+
+      if (unanswered.length > 0) {
+        showToast('Em hãy chọn Đúng hoặc Sai cho tất cả các ý trong câu trước khi kiểm tra nhé!');
+        return;
+      }
+
+      let allCorrect = true;
+      let detailedFeedback = '<ul class="space-y-1.5 mt-1">';
+
+      q.statements.forEach(s => {
+        const userChoice = currentAnswers[s.id];
+        const isMatch = (userChoice === s.isCorrect);
+        if (!isMatch) allCorrect = false;
+
+        detailedFeedback += `
+          <li class="flex items-start gap-1.5">
+            <i class="fa-solid ${isMatch ? 'fa-check text-emerald-600' : 'fa-xmark text-rose-500'} mt-1"></i>
+            <div>
+              <strong>Ý ${s.text.substring(0, 2)}:</strong> ${s.isCorrect ? 'ĐÚNG' : 'SAI'} 
+              <span class="text-slate-600">(${escapeHtml(s.rationale)})</span>
+            </div>
+          </li>
+        `;
+      });
+      detailedFeedback += '</ul>';
+
+      const feedbackBox = document.getElementById(`feedback-${qId}`);
+      const statusBadge = document.getElementById(`status-${qId}`);
+      statusBadge.classList.remove('hidden');
+      feedbackBox.classList.remove('hidden');
+
+      if (allCorrect) {
+        statusBadge.className = 'status-badge text-xs font-semibold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800';
+        statusBadge.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i>Chính xác 100% (+15đ)';
+        feedbackBox.className = 'mt-3 p-3 rounded-xl text-xs bg-emerald-50 border border-emerald-200 text-emerald-900';
+        feedbackBox.innerHTML = `<strong>Rất xuất sắc!</strong> Em đã xác định chính xác tính Đúng/Sai của từng nhận định: ${detailedFeedback}`;
+        if (!userAnswers[qId]) {
+          earnedPoints += 15;
+        }
+      } else {
+        statusBadge.className = 'status-badge text-xs font-semibold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800';
+        statusBadge.innerHTML = '<i class="fa-solid fa-circle-exclamation mr-1"></i>Có ý chưa đúng';
+        feedbackBox.className = 'mt-3 p-3 rounded-xl text-xs bg-slate-50 border border-slate-200 text-slate-800';
+        feedbackBox.innerHTML = `<strong>Đối chiếu kết quả từng ý:</strong> ${detailedFeedback}`;
+      }
+
+      userAnswers[qId] = { correct: allCorrect };
+      updateScoreCounter();
+    }
+
+    // Short Answer Handling
+    function checkShortAnswer(qId, subject) {
+      const q = questionBank[subject].find(item => item.id === qId);
+      if (!q) return;
+
+      const inputVal = (document.getElementById(`input-${qId}`).value || '').trim().toLowerCase();
+      if (!inputVal) {
+        showToast('Em vui lòng nhập câu trả lời vào ô trống trước nhé!');
+        return;
+      }
+
+      const isCorrect = q.expected.some(exp => inputVal === exp.toLowerCase() || inputVal.includes(exp.toLowerCase()));
+      const feedbackBox = document.getElementById(`feedback-${qId}`);
+      const statusBadge = document.getElementById(`status-${qId}`);
+      statusBadge.classList.remove('hidden');
+      feedbackBox.classList.remove('hidden');
+
+      if (isCorrect) {
+        statusBadge.className = 'status-badge text-xs font-semibold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800';
+        statusBadge.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i>Chính xác (+10đ)';
+        feedbackBox.className = 'mt-3 p-3 rounded-xl text-xs bg-emerald-50 border border-emerald-200 text-emerald-900';
+        feedbackBox.innerHTML = `<strong>Chính xác!</strong> ${escapeHtml(q.explanation)}`;
+        if (!userAnswers[qId]) earnedPoints += 10;
+      } else {
+        statusBadge.className = 'status-badge text-xs font-semibold px-2 py-0.5 rounded-md bg-rose-100 text-rose-800';
+        statusBadge.innerHTML = '<i class="fa-solid fa-circle-xmark mr-1"></i>Chưa chính xác';
+        feedbackBox.className = 'mt-3 p-3 rounded-xl text-xs bg-rose-50 border border-rose-200 text-rose-900';
+        feedbackBox.innerHTML = `<strong>Đáp án đúng là: ${q.expected[0]}</strong>. ${escapeHtml(q.explanation)}`;
+      }
+
+      userAnswers[qId] = { isCorrect: isCorrect };
+      updateScoreCounter();
+    }
+
+    // Essay Handling
+    function toggleEssayModel(qId) {
+      const modelBox = document.getElementById(`essay-model-${qId}`);
+      modelBox.classList.toggle('hidden');
+    }
+
+    function markSelfEssay(qId, isPassed) {
+      const statusBadge = document.getElementById(`status-${qId}`);
+      statusBadge.classList.remove('hidden');
+
+      if (isPassed) {
+        statusBadge.className = 'status-badge text-xs font-semibold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800';
+        statusBadge.innerHTML = '<i class="fa-solid fa-award mr-1"></i>Đã đạt (+20đ)';
+        if (!userAnswers[qId]) earnedPoints += 20;
+      } else {
+        statusBadge.className = 'status-badge text-xs font-semibold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800';
+        statusBadge.innerHTML = '<i class="fa-solid fa-rotate-right mr-1"></i>Cần rèn luyện thêm';
+      }
+
+      userAnswers[qId] = { isPassed: isPassed };
+      updateScoreCounter();
+    }
+
+    function toggleHint(qId) {
+      const hintBox = document.getElementById(`hint-${qId}`);
+      hintBox.classList.toggle('hidden');
+    }
+
+    function updateScoreCounter() {
+      document.getElementById('score-counter').innerText = earnedPoints;
+    }
+
+    function updateCounters() {
+      document.getElementById('bio-count').innerText = `${questionBank.biology.length} câu`;
+      document.getElementById('chem-count').innerText = `${questionBank.chemistry.length} câu`;
+      document.getElementById('phys-count').innerText = `${questionBank.physics.length} câu`;
+    }
+
+    function resetAllProgress() {
+      showConfirmModal('Em có chắc chắn muốn làm lại từ đầu không? Toàn bộ điểm số và bài làm sẽ được thiết lập lại.', () => {
+        earnedPoints = 0;
+        userAnswers = {};
+        tfState = {};
+        renderAllSubjects();
+        updateScoreCounter();
+        filterType('all');
+        showToast('Đã thiết lập lại bài làm từ đầu!');
+      });
+    }
+
+    // Modal & Toast Utilities
+    function showToast(message) {
+      const toast = document.getElementById('toast-box');
+      const toastText = document.getElementById('toast-text');
+      if (!toast || !toastText) return;
+      toastText.innerText = message;
+      toast.classList.remove('translate-y-10', 'opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        toast.classList.add('translate-y-10', 'opacity-0', 'pointer-events-none');
+      }, 3000);
+    }
+
+    function showConfirmModal(text, onConfirm) {
+      const modal = document.getElementById('custom-modal');
+      const desc = document.getElementById('modal-desc');
+      const confirmBtn = document.getElementById('modal-confirm-btn');
+      const cancelBtn = document.getElementById('modal-cancel-btn');
+      if (!modal || !desc || !confirmBtn || !cancelBtn) return;
+      
+      desc.innerText = text;
+      modal.classList.remove('hidden');
+
+      const handleConfirm = () => {
+        modal.classList.add('hidden');
+        confirmBtn.removeEventListener('click', handleConfirm);
+        cancelBtn.removeEventListener('click', handleCancel);
+        if (onConfirm) onConfirm();
+      };
+
+      const handleCancel = () => {
+        modal.classList.add('hidden');
+        confirmBtn.removeEventListener('click', handleConfirm);
+        cancelBtn.removeEventListener('click', handleCancel);
+      };
+
+      confirmBtn.addEventListener('click', handleConfirm);
+      cancelBtn.addEventListener('click', handleCancel);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>
